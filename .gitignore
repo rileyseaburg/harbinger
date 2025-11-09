@@ -10,7 +10,7 @@
 .idea/
 *.swp
 *.swo
-*~
+*~ i
 
 # OS generated files
 .DS_Store

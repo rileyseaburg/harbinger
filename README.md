@@ -14,6 +14,31 @@ This tool runs your Postman collections against your actual API, captures the re
 - 🎯 **OpenAPI 3.0** - Generates industry-standard OpenAPI specifications
 - 🔧 **Variable Support** - Resolves Postman variables from collections and environments
 - 📝 **YAML Output** - Human-readable OpenAPI spec files
+- 🖥️ **Desktop Application** - Beautiful Tauri-based GUI with file browser, variable manager, and live progress tracking
+- 🎨 **Professional Icons** - Complete icon set for all platforms (Windows, macOS, Linux, iOS, Android)
+
+## Desktop Application
+
+Harbinger includes a beautiful desktop application built with Tauri and React. The GUI provides:
+
+- **File Browser** - Easy Postman collection and environment file selection
+- **Variable Manager** - Edit and manage collection variables with preset templates
+- **Live Progress** - Real-time execution monitoring with request logs
+- **Results Viewer** - Syntax-highlighted spec display with copy and save options
+- **History Tracking** - Keep track of your recent generations
+- **Dark/Light Mode** - Modern UI with theme support
+
+### Desktop App Features
+
+- **Platform Support**: Windows, macOS, Linux
+- **Native Performance**: Tauri provides near-native speed
+- **Modern UI**: Built with React and Tailwind CSS
+- **Professional Icons**: Complete icon set in `src-tauri/icons/` including:
+  - Windows: `.ico` and various sizes
+  - macOS: `.icns` format
+  - Linux: PNG formats
+  - Mobile: Android and iOS app icons
+  - Store: App store and Microsoft store logos
 
 ## Installation
 
@@ -30,6 +55,15 @@ cargo build --release
 ```
 
 The binary will be available at `target/release/harbinger` (or `harbinger.exe` on Windows).
+
+### Desktop Application
+
+To build and run the desktop application:
+
+```bash
+cd src-tauri
+cargo tauri dev
+```
 
 ## Usage
 
