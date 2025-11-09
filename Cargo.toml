@@ -7,7 +7,7 @@ description = "A Rust implementation that captures live API responses from Postm
 license = "Apache-2.0"
 repository = "https://github.com/yourusername/harbinger"
 homepage = "https://github.com/yourusername/harbinger"
-keywords = ["api", "openapi", "postman", "specification", "generator", "har", "live-responses"]
+keywords = ["api", "openapi", "postman", "specification", "generator"]
 categories = ["command-line-utilities", "web-programming", "development-tools"]
 readme = "README.md"
 
