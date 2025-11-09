@@ -1,0 +1,56 @@
+# Build artifacts
+/target/
+/src-tauri/target/
+/ui/dist/
+/ui/node_modules/
+/ui/.vite/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Test output files
+*.har
+test-*.yaml
+test-*.json
+
+# Package manager files
+ui/pnpm-lock.yaml
+ui/package-lock.json
+ui/yarn.lock
+
+# Build logs
+*.log
+logs/
+
+# Rust specific
+Cargo.lock
+**/*.pdb
+
+# Tauri specific
+src-tauri/Cargo.lock
+src-tauri/app-icon.png
+src-tauri/gen/
+
+# Temporary files
+*.tmp
+*.temp

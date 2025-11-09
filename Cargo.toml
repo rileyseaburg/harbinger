@@ -1,0 +1,32 @@
+[package]
+name = "harbinger"
+version = "0.1.0"
+edition = "2021"
+authors = ["Your Name <your.email@example.com>"]
+description = "A Rust implementation that captures live API responses from Postman collections and automatically generates OpenAPI 3.0 specifications"
+license = "Apache-2.0"
+repository = "https://github.com/yourusername/harbinger"
+homepage = "https://github.com/yourusername/harbinger"
+keywords = ["api", "openapi", "postman", "specification", "generator", "har", "live-responses"]
+categories = ["command-line-utilities", "web-programming", "development-tools"]
+readme = "README.md"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.0", features = ["full"] }
+reqwest = { version = "0.11", features = ["json"] }
+clap = { version = "4.5", features = ["derive"] }
+anyhow = "1.0"
+serde_yaml = "0.9"
+ indexmap = { version = "2.0", features = ["serde"] }
+regex = "1.10"
+url = "2.5"
+chrono = "0.4"
+
+[build-dependencies]
+tauri-build = { version = "1.5", features = [] }
+
+[[bin]]
+name = "harbinger"
+path = "src/main.rs"

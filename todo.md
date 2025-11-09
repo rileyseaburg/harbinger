@@ -1,0 +1,7 @@
+- [x] Review and update Cargo.toml for publishing
+- [x] Create CHANGELOG.md
+- [x] Create LICENSE file (Apache 2.0)
+- [x] Update Cargo.toml with proper metadata
+- [x] Update version for release
+- [x] Run final tests (cargo check and --help both passed)
+- [x] Update README.md with installation from crates.io

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://schema.tauri.app/config/2.0.0",
+  "productName": "API Specs Generator",
+  "version": "0.1.0",
+  "identifier": "com.api-specs.dev",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
+    "devUrl": "http://localhost:1420",
+    "frontendDist": "../ui/dist"
+  },
+  "app": {
+    "security": {
+      "csp": null
+    }
+  }
+}

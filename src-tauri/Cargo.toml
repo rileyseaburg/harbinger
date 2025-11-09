@@ -1,0 +1,25 @@
+[package]
+name = "api-specs-ui"
+version = "0.1.0"
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2.0", features = [] }
+
+[dependencies]
+tauri = { version = "2.0", features = ["rustls-tls"] }
+tauri-plugin-dialog = "2.0"
+tauri-plugin-fs = "2.0"
+tauri-plugin-shell = "2.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.0", features = ["full"] }
+reqwest = { version = "0.11", features = ["json"] }
+anyhow = "1.0"
+serde_yaml = "0.9"
+indexmap = { version = "2.0", features = ["serde"] }
+url = "2.5"
+chrono = "0.4"
+
+[features]
+custom-protocol = ["tauri/custom-protocol"]
