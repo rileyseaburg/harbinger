@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2025-11-09
+
+### Added
+- Professional logo and branding to README
+- Enhanced visual presentation with badges
+- crates.io pill badge with version specificity
+- Improved documentation structure and presentation
+
+### Changed
+- Updated version from 0.1.0 to 0.1.1
+- Enhanced README with comprehensive badge system
+
 ## [0.1.0] - 2025-11-09
 
 ### Added
@@ -36,7 +48,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Uses Tokio for async HTTP operations
 - Implements OpenAPI 3.0 specification standard
 - Supports JSON Schema inference and validation
-- Efficient memory usage and fast execution
 
 [Unreleased]: https://github.com/rileyseaburg/harbinger/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/rileyseaburg/harbinger/releases/tag/v0.1.0

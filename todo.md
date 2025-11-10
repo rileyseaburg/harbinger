@@ -25,3 +25,4 @@
 - [x] Fix keywords count for crates.io (reduce to 5)
 - [x] Publish to crates.io
 - [x] Add crates.io pill badge and logo to README
+- [x] Publish updated version to crates.io

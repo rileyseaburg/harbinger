@@ -2,7 +2,7 @@
 
 ![Harbinger Logo](https://via.placeholder.com/200x200/f59e0b/ffffff?text=🦀)
 
-[![crates.io](https://img.shields.io/crates/v/harbinger.svg)](https://crates.io/crates/harbinger)
+[![crates.io](https://img.shields.io/crates/v/harbinger/0.1.1.svg)](https://crates.io/crates/harbinger/0.1.1)
 [![docs.rs](https://docs.rs/harbinger/badge.svg)](https://docs.rs/harbinger)
 [![GitHub Actions](https://github.com/rileyseaburg/harbinger/workflows/Build/badge.svg)](https://github.com/rileyseaburg/harbinger/actions)
 
@@ -17,7 +17,7 @@ This tool runs your Postman collections against your actual API, captures the re
 - 🦀 **Pure Rust** - Fast, safe, and efficient
 - 🔄 **Live Response Capture** - Generates specs from actual API responses, not saved examples
 - 📦 **HAR Export** - Saves HTTP Archive files for debugging and analysis
-- 🎯 **OpenAPI 3.0** - Generates industry-standard OpenAPI specifications
+i - 🎯 **OpenAPI 3.0** - Generates industry-standard OpenAPI specifications
 - 🔧 **Variable Support** - Resolves Postman variables from collections and environments
 - 📝 **YAML Output** - Human-readable OpenAPI spec files
 - 🖥️ **Desktop Application** - Beautiful Tauri-based GUI with file browser, variable manager, and live progress tracking
@@ -50,7 +50,7 @@ Harbinger includes a beautiful desktop application built with Tauri and React. T
 
 ### From crates.io (Recommended)
 
-[![Install from crates.io](https://img.shields.io/crates/v/harbinger.svg)](https://crates.io/crates/harbinger)
+[![Install from crates.io](https://img.shields.io/crates/v/harbinger/0.1.1.svg)](https://crates.io/crates/harbinger/0.1.1)
 
 ```bash
 cargo install harbinger

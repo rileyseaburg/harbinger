@@ -1,6 +1,6 @@
 [package]
 name = "harbinger"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Your Name <your.email@example.com>"]
 description = "A Rust implementation that captures live API responses from Postman collections and automatically generates OpenAPI 3.0 specifications"
