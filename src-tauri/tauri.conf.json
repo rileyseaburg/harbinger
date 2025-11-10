@@ -5,7 +5,6 @@
   "identifier": "com.harbinger.dev",
   "build": {
     "beforeDevCommand": "npm --prefix ../ui run dev",
-    "beforeBuildCommand": "npm --prefix ../ui run build",
     "devUrl": "http://localhost:1420",
     "frontendDist": "../ui/dist"
   },

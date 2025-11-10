@@ -48,9 +48,14 @@ jobs:
       - name: Build frontend
         run: cd ui && npm run build
 
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli
+
       - name: Build Tauri app
+        run: cargo tauri build ${{ matrix.args }}
         working-directory: src-tauri
-        run: cargo install tauri-cli && cargo tauri build ${{ matrix.args }}
+        env:
+          TAURI_SKIP_DEVTOOLS_CHECK: true
 
       - name: Create Release
         if: matrix.platform == 'ubuntu-22.04'
