@@ -1,9 +1,11 @@
 # Harbinger
 
 ![Harbinger Logo](https://github.com/rileyseaburg/harbinger/blob/master/src-tauri/icons/Square310x310Logo.png)
+
+
 [![crates.io https://img.shields.io/crates/v/harbinger/](https://img.shields.io/crates/v/harbinger)](https://crates.io/crates/harbinger/0.1.1)
 [![docs.rs](https://docs.rs/harbinger/badge.svg)](https://docs.rs/harbinger)
-[![GitHub Actions](https://github.com/rileyseaburg/harbinger/workflows/Build/badge.svg)](https://github.com/rileyseaburg/harbinger/actions)
+[![Release](https://github.com/rileyseaburg/harbinger/actions/workflows/release.yml/badge.svg)](https://github.com/rileyseaburg/harbinger/actions/workflows/release.yml)
 
 **"The herald of your API's true nature"**
 
@@ -176,6 +178,7 @@ While Newman is a full-featured collection runner, this tool focuses specificall
 2. Generating OpenAPI specs from those responses
 
 It's optimized for the spec generation workflow rather than being a general-purpose testing tool.
+
 
 
 
