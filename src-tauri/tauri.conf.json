@@ -20,6 +20,15 @@
     ]
   },
   "app": {
+    "windows": [
+      {
+        "title": "Harbinger",
+        "width": 1200,
+        "height": 800,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
     "security": {
       "csp": null
     }
