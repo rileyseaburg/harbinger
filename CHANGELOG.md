@@ -38,5 +38,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Supports JSON Schema inference and validation
 - Efficient memory usage and fast execution
 
-[Unreleased]: https://github.com/yourusername/harbinger/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/yourusername/harbinger/releases/tag/v0.1.0
+[Unreleased]: https://github.com/rileyseaburg/harbinger/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/rileyseaburg/harbinger/releases/tag/v0.1.0

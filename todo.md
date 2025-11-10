@@ -1,7 +1,27 @@
 - [x] Review and update Cargo.toml for publishing
 - [x] Create CHANGELOG.md
-- [x] Create LICENSE file (Apache 2.0)
+- [x] Create LICENSE file (Apache 2.0)  
 - [x] Update Cargo.toml with proper metadata
 - [x] Update version for release
 - [x] Run final tests (cargo check and --help both passed)
 - [x] Update README.md with installation from crates.io
+- [x] Document publishing process
+- [x] Update project name to "Harbinger" and all references
+- [x] Update all binary references in README
+- [x] Update Tauri configuration for "Harbinger"
+- [x] Update UI files to reflect new name
+- [x] Update main UI heading and description
+- [x] Update CHANGELOG with new name
+- [x] Update PUBLISHING.md with new name
+- [x] Update Cargo.toml metadata in PUBLISHING.md
+- [x] Update final references in PUBLISHING.md
+- [x] Update .gitignore for comprehensive exclusions
+- [x] Add all files to Git
+- [x] Commit changes
+- [x] Create new GitHub repository for Harbinger
+- [x] Add Tauri desktop application information to README
+- [x] Commit final changes
+- [x] Push to GitHub
+- [x] Fix keywords count for crates.io (reduce to 5)
+- [x] Publish to crates.io
+- [x] Add crates.io pill badge and logo to README
