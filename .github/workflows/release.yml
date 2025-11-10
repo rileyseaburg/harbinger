@@ -50,11 +50,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          projectPath: src-tauri
-          configPath: tauri.conf.json
           tagName: ${{ github.ref_name }}
           releaseName: 'Harbinger ${{ github.ref_name }}'
           releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
           prerelease: false
+          tauriScript: cd src-tauri && cargo
           args: ${{ matrix.args }}
