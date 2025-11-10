@@ -1,0 +1,119 @@
+name: Update Homebrew Formula
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  update-formula:
+    runs-on: macos-latest
+    steps:
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+        
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+      - name: Get version
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+      - name: Download and calculate checksums
+        id: checksums
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          
+          # Download macOS artifacts
+          curl -L -o universal.dmg "https://github.com/rileyseaburg/harbinger/releases/download/v${VERSION}/Harbinger_${VERSION}_universal.dmg" || true
+          curl -L -o aarch64.dmg "https://github.com/rileyseaburg/harbinger/releases/download/v${VERSION}/Harbinger_${VERSION}_aarch64.dmg" || true
+          curl -L -o x64.dmg "https://github.com/rileyseaburg/harbinger/releases/download/v${VERSION}/Harbinger_${VERSION}_x64.dmg" || true
+          
+          # Calculate SHA256
+          if [ -f universal.dmg ]; then
+            UNIVERSAL_SHA=$(shasum -a 256 universal.dmg | cut -d ' ' -f 1)
+            echo "universal_sha=$UNIVERSAL_SHA" >> $GITHUB_OUTPUT
+          fi
+          
+          if [ -f aarch64.dmg ]; then
+            AARCH64_SHA=$(shasum -a 256 aarch64.dmg | cut -d ' ' -f 1)
+            echo "aarch64_sha=$AARCH64_SHA" >> $GITHUB_OUTPUT
+          fi
+          
+          if [ -f x64.dmg ]; then
+            X64_SHA=$(shasum -a 256 x64.dmg | cut -d ' ' -f 1)
+            echo "x64_sha=$X64_SHA" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Clone or create tap repository
+        run: |
+          # Try to clone existing tap, or create new one
+          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/rileyseaburg/homebrew-tap.git tap || \
+          (mkdir -p tap && cd tap && git init && git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/rileyseaburg/homebrew-tap.git)
+          
+      - name: Update formula
+        run: |
+          cd tap
+          mkdir -p Formula
+          
+          VERSION=${{ steps.version.outputs.version }}
+          AARCH64_SHA=${{ steps.checksums.outputs.aarch64_sha }}
+          X64_SHA=${{ steps.checksums.outputs.x64_sha }}
+          UNIVERSAL_SHA=${{ steps.checksums.outputs.universal_sha }}
+          
+          cat > Formula/harbinger.rb << EOF
+          class Harbinger < Formula
+            desc "Herald of your API's true nature - captures live API responses and generates OpenAPI specs"
+            homepage "https://github.com/rileyseaburg/harbinger"
+            version "${VERSION}"
+            license "MIT"
+          
+            if OS.mac?
+              if Hardware::CPU.arm?
+                url "https://github.com/rileyseaburg/harbinger/releases/download/v#{version}/Harbinger_#{version}_aarch64.dmg"
+                sha256 "${AARCH64_SHA}"
+              else
+                url "https://github.com/rileyseaburg/harbinger/releases/download/v#{version}/Harbinger_#{version}_x64.dmg"
+                sha256 "${X64_SHA}"
+              end
+            end
+          
+            def install
+              prefix.install Dir["Harbinger.app"]
+              bin.write_exec_script "#{prefix}/Harbinger.app/Contents/MacOS/harbinger"
+            end
+          
+            def caveats
+              <<~EOS
+                Harbinger has been installed!
+                
+                GUI Application: Open from Applications folder
+                CLI: Run 'harbinger' from terminal
+                
+                For more information: https://github.com/rileyseaburg/harbinger
+              EOS
+            end
+          
+            test do
+              system "#{bin}/harbinger", "--version"
+            end
+          end
+          EOF
+          
+      - name: Commit and push
+        run: |
+          cd tap
+          git add Formula/harbinger.rb
+          git commit -m "Update Harbinger to ${{ steps.version.outputs.version }}" || exit 0
+          git push origin main || git push origin master || (git branch -M main && git push -u origin main)
+          
+      - name: Create tap repository if needed
+        if: failure()
+        run: |
+          gh repo create rileyseaburg/homebrew-tap --public --description "Homebrew tap for Harbinger" || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

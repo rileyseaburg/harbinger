@@ -1,0 +1,423 @@
+name: Publish Packages
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish-homebrew:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Get release info
+        id: release
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+      - name: Create Homebrew tap
+        run: |
+          # Create tap repository structure
+          mkdir -p homebrew-tap/Formula
+          
+      - name: Generate Homebrew formula
+        run: |
+          cat > homebrew-tap/Formula/harbinger.rb << 'EOF'
+          class Harbinger < Formula
+            desc "Herald of your API's true nature - captures live API responses and generates OpenAPI specs"
+            homepage "https://github.com/rileyseaburg/harbinger"
+            version "${{ steps.release.outputs.version }}"
+            
+            if OS.mac?
+              if Hardware::CPU.arm?
+                url "https://github.com/rileyseaburg/harbinger/releases/download/v#{version}/Harbinger_#{version}_aarch64.dmg"
+                sha256 "AARCH64_SHA256"
+              else
+                url "https://github.com/rileyseaburg/harbinger/releases/download/v#{version}/Harbinger_#{version}_x64.dmg"
+                sha256 "X64_SHA256"
+              end
+            end
+            
+            def install
+              prefix.install Dir["*"]
+              bin.install_symlink prefix/"Harbinger.app/Contents/MacOS/Harbinger" => "harbinger"
+            end
+            
+            def caveats
+              <<~EOS
+                Harbinger has been installed as a GUI application.
+                You can also use the command-line interface via:
+                  harbinger
+              EOS
+            end
+            
+            test do
+              system "#{bin}/harbinger", "--version"
+            end
+          end
+          EOF
+          
+      - name: Push to tap repository
+        if: github.event_name == 'release'
+        run: |
+          # This would push to a separate homebrew-tap repo
+          # You'll need to create rileyseaburg/homebrew-tap repository first
+          echo "Homebrew formula created at homebrew-tap/Formula/harbinger.rb"
+          
+  publish-winget:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Get release info
+        id: release
+        shell: pwsh
+        run: |
+          $version = $env:GITHUB_REF -replace 'refs/tags/v', ''
+          echo "version=$version" >> $env:GITHUB_OUTPUT
+          
+      - name: Generate Winget manifest
+        shell: pwsh
+        run: |
+          $version = "${{ steps.release.outputs.version }}"
+          New-Item -ItemType Directory -Force -Path "manifests/r/rileyseaburg/Harbinger/$version"
+          
+          # Main manifest
+          @"
+          PackageIdentifier: rileyseaburg.Harbinger
+          PackageVersion: $version
+          DefaultLocale: en-US
+          ManifestType: version
+          ManifestVersion: 1.5.0
+          "@ | Out-File -FilePath "manifests/r/rileyseaburg/Harbinger/$version/rileyseaburg.Harbinger.yaml" -Encoding UTF8
+          
+          # Installer manifest
+          @"
+          PackageIdentifier: rileyseaburg.Harbinger
+          PackageVersion: $version
+          Platform:
+          - Windows.Desktop
+          MinimumOSVersion: 10.0.0.0
+          InstallerType: wix
+          Scope: machine
+          InstallModes:
+          - interactive
+          - silent
+          - silentWithProgress
+          UpgradeBehavior: install
+          Installers:
+          - Architecture: x64
+            InstallerUrl: https://github.com/rileyseaburg/harbinger/releases/download/v$version/Harbinger_${version}_x64_en-US.msi
+            InstallerSha256: MSI_SHA256
+            ProductCode: '{PRODUCT_CODE}'
+          ManifestType: installer
+          ManifestVersion: 1.5.0
+          "@ | Out-File -FilePath "manifests/r/rileyseaburg/Harbinger/$version/rileyseaburg.Harbinger.installer.yaml" -Encoding UTF8
+          
+          # Locale manifest
+          @"
+          PackageIdentifier: rileyseaburg.Harbinger
+          PackageVersion: $version
+          PackageLocale: en-US
+          Publisher: Riley Seaburg
+          PublisherUrl: https://github.com/rileyseaburg
+          PublisherSupportUrl: https://github.com/rileyseaburg/harbinger/issues
+          Author: Riley Seaburg
+          PackageName: Harbinger
+          PackageUrl: https://github.com/rileyseaburg/harbinger
+          License: MIT
+          LicenseUrl: https://github.com/rileyseaburg/harbinger/blob/master/LICENSE
+          Copyright: Copyright (c) 2025 Riley Seaburg
+          ShortDescription: Herald of your API's true nature
+          Description: Harbinger captures live API responses from Postman collections and automatically generates OpenAPI 3.0 specifications. Built with Rust for performance and reliability.
+          Tags:
+          - api
+          - openapi
+          - postman
+          - rust
+          - swagger
+          - api-testing
+          - api-documentation
+          ManifestType: defaultLocale
+          ManifestVersion: 1.5.0
+          "@ | Out-File -FilePath "manifests/r/rileyseaburg/Harbinger/$version/rileyseaburg.Harbinger.locale.en-US.yaml" -Encoding UTF8
+          
+      - name: Upload manifests as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: winget-manifests
+          path: manifests/
+          
+  publish-chocolatey:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Get release info
+        id: release
+        shell: pwsh
+        run: |
+          $version = $env:GITHUB_REF -replace 'refs/tags/v', ''
+          echo "version=$version" >> $env:GITHUB_OUTPUT
+          
+      - name: Generate Chocolatey package
+        shell: pwsh
+        run: |
+          $version = "${{ steps.release.outputs.version }}"
+          New-Item -ItemType Directory -Force -Path "chocolatey/tools"
+          
+          # nuspec file
+          @"
+          <?xml version="1.0" encoding="utf-8"?>
+          <package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+            <metadata>
+              <id>harbinger</id>
+              <version>$version</version>
+              <packageSourceUrl>https://github.com/rileyseaburg/harbinger</packageSourceUrl>
+              <owners>rileyseaburg</owners>
+              <title>Harbinger</title>
+              <authors>Riley Seaburg</authors>
+              <projectUrl>https://github.com/rileyseaburg/harbinger</projectUrl>
+              <iconUrl>https://raw.githubusercontent.com/rileyseaburg/harbinger/master/src-tauri/icons/icon.png</iconUrl>
+              <copyright>2025 Riley Seaburg</copyright>
+              <licenseUrl>https://github.com/rileyseaburg/harbinger/blob/master/LICENSE</licenseUrl>
+              <requireLicenseAcceptance>false</requireLicenseAcceptance>
+              <projectSourceUrl>https://github.com/rileyseaburg/harbinger</projectSourceUrl>
+              <docsUrl>https://github.com/rileyseaburg/harbinger/blob/master/README.md</docsUrl>
+              <bugTrackerUrl>https://github.com/rileyseaburg/harbinger/issues</bugTrackerUrl>
+              <tags>api openapi postman rust swagger testing documentation</tags>
+              <summary>Herald of your API's true nature</summary>
+              <description>Harbinger captures live API responses from Postman collections and automatically generates OpenAPI 3.0 specifications. Built with Rust for performance and reliability.</description>
+            </metadata>
+            <files>
+              <file src="tools\**" target="tools" />
+            </files>
+          </package>
+          "@ | Out-File -FilePath "chocolatey/harbinger.nuspec" -Encoding UTF8
+          
+          # Install script
+          @"
+          `$ErrorActionPreference = 'Stop'
+          `$packageName = 'harbinger'
+          `$toolsDir = "`$(Split-Path -parent `$MyInvocation.MyCommand.Definition)"
+          `$url64 = 'https://github.com/rileyseaburg/harbinger/releases/download/v$version/Harbinger_${version}_x64-setup.exe'
+          
+          `$packageArgs = @{
+            packageName   = `$packageName
+            fileType      = 'EXE'
+            url64bit      = `$url64
+            softwareName  = 'Harbinger*'
+            checksum64    = 'CHECKSUM64'
+            checksumType64= 'sha256'
+            silentArgs    = '/S'
+            validExitCodes= @(0)
+          }
+          
+          Install-ChocolateyPackage @packageArgs
+          "@ | Out-File -FilePath "chocolatey/tools/chocolateyinstall.ps1" -Encoding UTF8
+          
+      - name: Upload Chocolatey package
+        uses: actions/upload-artifact@v4
+        with:
+          name: chocolatey-package
+          path: chocolatey/
+          
+  publish-snap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Create snapcraft.yaml
+        run: |
+          cat > snapcraft.yaml << 'EOF'
+          name: harbinger
+          version: git
+          summary: Herald of your API's true nature
+          description: |
+            Harbinger captures live API responses from Postman collections and 
+            automatically generates OpenAPI 3.0 specifications. Built with Rust 
+            for performance and reliability.
+            
+          base: core22
+          confinement: strict
+          grade: stable
+          
+          architectures:
+            - build-on: amd64
+          
+          apps:
+            harbinger:
+              command: bin/harbinger
+              plugs:
+                - home
+                - network
+                - network-bind
+          
+          parts:
+            harbinger:
+              plugin: rust
+              source: .
+              build-packages:
+                - pkg-config
+                - libssl-dev
+          EOF
+          
+      - name: Build snap
+        uses: snapcore/action-build@v1
+        id: build
+        
+      - name: Upload snap artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: snap-package
+          path: ${{ steps.build.outputs.snap }}
+          
+      - name: Publish to Snap Store
+        if: github.event_name == 'release'
+        uses: snapcore/action-publish@v1
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAP_STORE_TOKEN }}
+        with:
+          snap: ${{ steps.build.outputs.snap }}
+          release: stable
+          
+  publish-flatpak:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Create Flatpak manifest
+        run: |
+          mkdir -p flatpak
+          cat > flatpak/com.harbinger.Harbinger.yml << 'EOF'
+          app-id: com.harbinger.Harbinger
+          runtime: org.freedesktop.Platform
+          runtime-version: '23.08'
+          sdk: org.freedesktop.Sdk
+          sdk-extensions:
+            - org.freedesktop.Sdk.Extension.rust-stable
+          command: harbinger
+          
+          finish-args:
+            - --share=network
+            - --share=ipc
+            - --socket=x11
+            - --socket=wayland
+            - --device=dri
+            - --filesystem=home
+          
+          modules:
+            - name: harbinger
+              buildsystem: simple
+              build-commands:
+                - cargo build --release
+                - install -Dm755 target/release/api-specs /app/bin/harbinger
+              sources:
+                - type: dir
+                  path: .
+          EOF
+          
+      - name: Upload Flatpak manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: flatpak-manifest
+          path: flatpak/
+          
+  publish-aur:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Get release info
+        id: release
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+      - name: Generate PKGBUILD
+        run: |
+          cat > PKGBUILD << 'EOF'
+          # Maintainer: Riley Seaburg <your-email@example.com>
+          pkgname=harbinger
+          pkgver=${{ steps.release.outputs.version }}
+          pkgrel=1
+          pkgdesc="Herald of your API's true nature - captures live API responses and generates OpenAPI specs"
+          arch=('x86_64')
+          url="https://github.com/rileyseaburg/harbinger"
+          license=('MIT')
+          depends=()
+          makedepends=('rust' 'cargo')
+          source=("$pkgname-$pkgver.tar.gz::https://github.com/rileyseaburg/harbinger/archive/v$pkgver.tar.gz")
+          sha256sums=('SKIP')
+          
+          build() {
+            cd "$pkgname-$pkgver"
+            cargo build --release --locked
+          }
+          
+          check() {
+            cd "$pkgname-$pkgver"
+            cargo test --release --locked
+          }
+          
+          package() {
+            cd "$pkgname-$pkgver"
+            install -Dm755 "target/release/api-specs" "$pkgdir/usr/bin/harbinger"
+            install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+            install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+          }
+          EOF
+          
+      - name: Upload PKGBUILD
+        uses: actions/upload-artifact@v4
+        with:
+          name: aur-package
+          path: PKGBUILD
+          
+  publish-scoop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Get release info
+        id: release
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+      - name: Generate Scoop manifest
+        run: |
+          cat > harbinger.json << 'EOF'
+          {
+            "version": "${{ steps.release.outputs.version }}",
+            "description": "Herald of your API's true nature - captures live API responses and generates OpenAPI specs",
+            "homepage": "https://github.com/rileyseaburg/harbinger",
+            "license": "MIT",
+            "architecture": {
+              "64bit": {
+                "url": "https://github.com/rileyseaburg/harbinger/releases/download/v${{ steps.release.outputs.version }}/Harbinger_${{ steps.release.outputs.version }}_x64-setup.exe#/dl.7z",
+                "hash": "HASH_PLACEHOLDER"
+              }
+            },
+            "bin": "harbinger.exe",
+            "checkver": "github",
+            "autoupdate": {
+              "architecture": {
+                "64bit": {
+                  "url": "https://github.com/rileyseaburg/harbinger/releases/download/v$version/Harbinger_$version_x64-setup.exe#/dl.7z"
+                }
+              }
+            }
+          }
+          EOF
+          
+      - name: Upload Scoop manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: scoop-manifest
+          path: harbinger.json
