@@ -50,7 +50,7 @@ jobs:
 
       - name: Build Tauri app
         working-directory: src-tauri
-        run: cargo install cargo-tauri && cargo tauri build ${{ matrix.args }}
+        run: cargo install tauri-cli && cargo tauri build ${{ matrix.args }}
 
       - name: Create Release
         if: matrix.platform == 'ubuntu-22.04'
