@@ -45,11 +45,13 @@ jobs:
       - name: Install frontend dependencies
         run: cd ui && npm install
 
-      - uses: tauri-apps/tauri-action@v0
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tauriScript: cd src-tauri && cargo tauri
+          projectPath: src-tauri
+          configPath: tauri.conf.json
           tagName: ${{ github.ref_name }}
           releaseName: 'Harbinger ${{ github.ref_name }}'
           releaseBody: 'See the assets to download this version and install.'

@@ -1,5 +1,11 @@
 # Harbinger
 
+![Harbinger Logo](https://via.placeholder.com/200x200/f59e0b/ffffff?text=🦀)
+
+[![crates.io](https://img.shields.io/crates/v/harbinger.svg)](https://crates.io/crates/harbinger)
+[![docs.rs](https://docs.rs/harbinger/badge.svg)](https://docs.rs/harbinger)
+[![GitHub Actions](https://github.com/rileyseaburg/harbinger/workflows/Build/badge.svg)](https://github.com/rileyseaburg/harbinger/actions)
+
 **"The herald of your API's true nature"**
 
 A Rust implementation that captures live API responses from Postman collections and automatically generates OpenAPI 3.0 specifications.
@@ -43,6 +49,8 @@ Harbinger includes a beautiful desktop application built with Tauri and React. T
 ## Installation
 
 ### From crates.io (Recommended)
+
+[![Install from crates.io](https://img.shields.io/crates/v/harbinger.svg)](https://crates.io/crates/harbinger)
 
 ```bash
 cargo install harbinger
